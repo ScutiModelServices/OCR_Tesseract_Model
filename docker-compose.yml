@@ -1,0 +1,47 @@
+# Tesseract service: N API replicas behind one nginx address. Each replica runs Tesseract child processes,
+# so CPU use is per replica; the downloaded model files are shared through the models volume.
+# Start:  docker compose up -d --build          (callers use http://<host>:9260)
+# Scale:  TESS_REPLICAS=3 docker compose up -d --build, then: docker compose restart tess_lb
+
+name: tesseract
+
+services:
+  tesseract:
+    build: .
+    restart: unless-stopped
+    mem_limit: ${TESS_MEM_LIMIT:-0}  # 0 = no cap; a cap makes an out-of-memory kill stay inside this container
+    environment:
+      TESS_ADMIN_PASSWORD: ${TESS_ADMIN_PASSWORD:-}
+      TESS_NUM_THREAD: ${TESS_NUM_THREAD:-}
+      TESS_REPLICAS: ${TESS_REPLICAS:-1}  # shown read-only on /admin/
+    volumes:
+      - models:/models
+      - tokens:/data
+    deploy:
+      replicas: ${TESS_REPLICAS:-1}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9260/health')"]
+      interval: 15s
+      timeout: 5s
+      start_period: 300s
+    networks: [tesseract]
+
+  tess_lb:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "${TESS_PORT:-9260}:9260"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      tesseract:
+        condition: service_healthy
+    networks: [tesseract]
+
+volumes:
+  models:
+  tokens:
+
+networks:
+  # Other stacks reach http://tess_lb:9260 by joining this network.
+  tesseract:
