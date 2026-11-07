@@ -105,3 +105,4 @@ Recognize text sends the chosen image as the raw body to `POST /v1/ocr` with the
 - [Docker on this PC](docs/guide-docker-same-device.md)
 - [Run without Docker](docs/guide-no-docker-same-device.md)
 - [Model attribution](docs/model-notice.md)
+- [Test it from the command line](docs/guide-cli.md)
