@@ -24,14 +24,14 @@ uv run python src/app.py
 
 | Variable | Default | Effect |
 |---|---|---|
-| `TESS_HOST` | `127.0.0.1` | Bind address. Use `0.0.0.0` only if other devices must reach it. |
-| `TESS_PORT` | `29261` | Port. |
-| `TESS_ADMIN_PASSWORD` | empty | Unlocks `/admin/` and requires tokens on every call but `/health`. Empty = no auth. |
-| `TESS_WARM` | `1` | Read the model files at start. |
-| `TESS_NUM_THREAD` | the library decides | CPU threads. Set it to the number of **physical** cores. |
+| `SERVICE_HOST` | `127.0.0.1` | Bind address. Use `0.0.0.0` only if other devices must reach it. |
+| `SERVICE_PORT` | `29261` | Port. |
+| `SERVICE_ADMIN_PASSWORD` | empty | Unlocks `/admin/` and requires tokens on every call but `/health`. Empty = no auth. |
+| `SERVICE_WARM` | `1` | Read the model files at start. |
+| `SERVICE_NUM_THREAD` | the library decides | CPU threads. Set it to the number of **physical** cores. |
 
-PowerShell: `$env:TESS_ADMIN_PASSWORD = "secret"; .\run.bat`
-Bash: `TESS_ADMIN_PASSWORD=secret uv run python src/app.py`
+PowerShell: `$env:SERVICE_ADMIN_PASSWORD = "secret"; .\run.bat`
+Bash: `SERVICE_ADMIN_PASSWORD=secret uv run python src/app.py`
 
 ## Check
 ```bash

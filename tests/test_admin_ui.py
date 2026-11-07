@@ -40,7 +40,7 @@ def base_url():
     updates = Updates("tesseract-ocr/tessdata", cached_sha=cached, remote_sha=latest, download=download, unload=engine.unload,
                       description="Compares the installed files with the digests pinned in this release.",
                       reload_note="Model files installed. Every replica reads the new files on its next request.")
-    config = Config(Path(os.environ["TESS_TOKENS_FILE"]).with_name("settings.json"), SETTINGS)
+    config = Config(Path(os.environ["SERVICE_TOKENS_FILE"]).with_name("settings.json"), SETTINGS)
     config.set({"update_check_hours": 0, "warm": False})
     app = create_app(engine, PASSWORD, config=config, updates=updates)
     with socket.socket() as probe:

@@ -2,6 +2,32 @@
 
 ## Unreleased
 
+### Breaking: common service environment variables
+
+Service-owned environment variables now use `SERVICE_*`. Old names are no longer read.
+Rename old names once in your real `.env`, Compose `environment:` block, and CI/secret settings.
+
+| Old name | New name |
+|---|---|
+| `TESS_ADMIN_PASSWORD` | `SERVICE_ADMIN_PASSWORD` |
+| `TESS_CACHE_SIZE` | `SERVICE_CACHE_SIZE` |
+| `TESS_CONCURRENCY` | `SERVICE_CONCURRENCY` |
+| `TESS_HOST` | `SERVICE_HOST` |
+| `TESS_MAX_INFLIGHT` | `SERVICE_MAX_INFLIGHT` |
+| `TESS_MAX_PIXELS` | `SERVICE_MAX_PIXELS` |
+| `TESS_MAX_UPLOAD_MB` | `SERVICE_MAX_UPLOAD_MB` |
+| `TESS_MEM_LIMIT` | `SERVICE_MEM_LIMIT` |
+| `TESS_MODELS_DIR` | `SERVICE_MODELS_DIR` |
+| `TESS_NUM_THREAD` | `SERVICE_NUM_THREAD` |
+| `TESS_PORT` | `SERVICE_PORT` |
+| `TESS_REPLICAS` | `SERVICE_REPLICAS` |
+| `TESS_TIMEOUT_S` | `SERVICE_TIMEOUT_S` |
+| `TESS_TOKENS_FILE` | `SERVICE_TOKENS_FILE` |
+| `TESS_UPDATE_CHECK_HOURS` | `SERVICE_UPDATE_CHECK_HOURS` |
+| `TESS_WARM` | `SERVICE_WARM` |
+| `TESS_WEB_DIR` | `SERVICE_WEB_DIR` |
+| `TESS_WEIGHTS_MARKER` | `SERVICE_WEIGHTS_MARKER` |
+
 - Default HTTP port moves from 9260 to 29261. Update explicit old ports in your real `.env`, saved tool-service `backends.json` connections, and browser/MCP client configurations once. Compose now uses 29261 inside API replicas and nginx; deployments using the old Compose default must recreate containers. A custom host-port override stays in effect until you change it; container ports still move to 29261.
 
 - Renamed `TesseractModel` to `OCR_Tesseract_Model`; Docker project, API image, services, load balancer and volumes now use `ocr_tesseract_model` names. Callers on `citadel_core` connect to `ocr_tesseract_model_lb` at the existing port.

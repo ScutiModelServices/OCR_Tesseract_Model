@@ -119,7 +119,7 @@ def run_tesseract(image: Any, directory: Path, command: str, timeout: float) -> 
 
 def default_marker(models_dir: Path) -> Path:
     """File in the shared models volume whose content changes when one replica downloads new weights."""
-    configured = os.environ.get("TESS_WEIGHTS_MARKER")
+    configured = os.environ.get("SERVICE_WEIGHTS_MARKER")
     return Path(configured) if configured else models_dir / ".tesseract-weights-version"
 
 
@@ -161,7 +161,7 @@ class TesseractEngine:
     def __init__(self, models_dir: Path | str | None = None, *, marker: Path | None = None,
                  command: str | None = None, runner: Callable[..., tuple[str, float | None]] = run_tesseract,
                  downloader: Callable[[Path], None] = download_weights, concurrency: int = 2) -> None:
-        self.models_dir = Path(models_dir or os.environ.get("TESS_MODELS_DIR") or "models")
+        self.models_dir = Path(models_dir or os.environ.get("SERVICE_MODELS_DIR") or "models")
         self.command = shutil.which(command or os.environ.get("TESSERACT_CMD") or "tesseract")
         self._runner, self._downloader = runner, downloader
         self._marker = marker if marker is not None else default_marker(self.models_dir)

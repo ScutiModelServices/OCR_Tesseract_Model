@@ -1,5 +1,5 @@
 """Real-model check: reads a PNG, JPEG or WebP (or draws a small test image) and prints text, confidence and timing.
-Needs the Tesseract program and the model files (run the service once and use the Updates card, or set TESS_MODELS_DIR).
+Needs the Tesseract program and the model files (run the service once and use the Updates card, or set SERVICE_MODELS_DIR).
 Usage: uv run python tools/smoke.py [image] [fast|accurate]"""
 import asyncio
 import sys

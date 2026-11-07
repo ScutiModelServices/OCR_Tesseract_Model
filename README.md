@@ -27,7 +27,7 @@ caller can wait; it can only shorten *Time limit per call*. Any other option is 
 or `null` when there is no word. `fingerprint` names the engine reading and the model file's SHA-256
 (`tesseract-tsv-v1|<mode>|<digest>`): a caller can key its own cache with it, so a changed model never serves old text.
 
-**Cache.** *Answers kept per replica* (`TESS_CACHE_SIZE`, default 256, 0 = off) keeps the last answers for the same image
+**Cache.** *Answers kept per replica* (`SERVICE_CACHE_SIZE`, default 256, 0 = off) keeps the last answers for the same image
 and mode and sends them again without recognizing (`X-Cache: hit`). Recognition is deterministic, so every request is
 kept. New model files empty the cache. The cache is per replica, so with N replicas the hit rate is about 1/N.
 
@@ -44,7 +44,7 @@ files are installed.
 
 ## Admin page
 
-`/admin/` (password `TESS_ADMIN_PASSWORD`): tokens with rate limit and expiry, usage numbers, CPU threads, the
+`/admin/` (password `SERVICE_ADMIN_PASSWORD`): tokens with rate limit and expiry, usage numbers, CPU threads, the
 Settings card (update check hours, in-flight cap, answers kept, largest image, pixel limit, time limit, and the restart
 options recognitions at once and read files at start) and the Updates card. `/metrics` (admin password) is Prometheus
 text per token. `tess_request_seconds` is a histogram of how long each `/v1` call took on the replica that answers.

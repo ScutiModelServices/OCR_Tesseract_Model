@@ -91,9 +91,9 @@ def test_startup_warm_up_never_stops_the_service():
 def test_main_builds_the_engine_from_settings(monkeypatch, tmp_path):
     import app as module
 
-    monkeypatch.setenv("TESS_TOKENS_FILE", str(tmp_path / "tokens.json"))
-    monkeypatch.setenv("TESS_NUM_THREAD", "2")
-    monkeypatch.setenv("TESS_PORT", "9999")
+    monkeypatch.setenv("SERVICE_TOKENS_FILE", str(tmp_path / "tokens.json"))
+    monkeypatch.setenv("SERVICE_NUM_THREAD", "2")
+    monkeypatch.setenv("SERVICE_PORT", "9999")
     seen, started = [], {}
     monkeypatch.setattr(module.TesseractEngine, "num_thread", property(lambda self: None, lambda self, count: seen.append(count)))
     monkeypatch.setattr("uvicorn.run", lambda app, host, port: started.update(app=app, host=host, port=port))

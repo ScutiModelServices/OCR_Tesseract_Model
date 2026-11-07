@@ -1,6 +1,6 @@
 # OCR_Tesseract_Model
 
-Tesseract OCR (`--oem 1`, English `fast` and `accurate` models, CPU) served over HTTP, behind the shared model-service admin page, tokens and settings. Port 29261, env prefix `TESS_`, token prefix `tess_`. The model half of `AI/ToolServices/Lens`: one image crop in, text and confidence out. Built from `STT_Moonshine_Model`.
+Tesseract OCR (`--oem 1`, English `fast` and `accurate` models, CPU) served over HTTP, behind the shared model-service admin page, tokens and settings. Port 29261, env prefix `SERVICE_`, token prefix `tess_`. The model half of `AI/ToolServices/Lens`: one image crop in, text and confidence out. Built from `STT_Moonshine_Model`.
 
 ## Agent instructions
 This file is the one instruction file for every coding agent; `CLAUDE.md` only imports it (`@AGENTS.md`). Edit this file, never `CLAUDE.md`.
@@ -16,7 +16,7 @@ This file is the one instruction file for every coding agent; `CLAUDE.md` only i
 - Differences from the other services: `POST /v1/ocr` takes one PNG, JPEG or WebP as the body and `mode` (`fast` or `accurate`) and `timeout` as query options (others 422); `GET /v1/modes` lists availability and fingerprints; no streaming, no `trust_remote_code`, no project models, no `temperature`/`max_tokens`; one crop per call (the caller cuts regions); English only.
 - Nothing is loaded in this process: each call is a Tesseract child process (`engine.run_tesseract`, pytesseract) with `--tessdata-dir` of the mode's folder, so a request never changes the process environment. `engine.TesseractEngine` takes an injectable `runner`, `downloader` and `command` for tests. `concurrency` (restart setting) is the semaphore of children per replica.
 - `num_thread` sets `OMP_THREAD_LIMIT` in this process's environment for the children started next. It is live: no reload, no cache change.
-- Model files are two pinned GitHub downloads (`engine.WEIGHTS`, SHA-256 checked before they replace anything), `models/<mode>/eng.traineddata`, in `TESS_MODELS_DIR` (Docker: the `/models` volume). The Updates card compares the pinned digests with the installed files (`cached_sha` is `None` until both exist); a newer upstream model is a code change. `ready` needs the program and both files.
+- Model files are two pinned GitHub downloads (`engine.WEIGHTS`, SHA-256 checked before they replace anything), `models/<mode>/eng.traineddata`, in `SERVICE_MODELS_DIR` (Docker: the `/models` volume). The Updates card compares the pinned digests with the installed files (`cached_sha` is `None` until both exist); a newer upstream model is a code change. `ready` needs the program and both files.
 - `fingerprint(mode)` = `tesseract-tsv-v1|<mode>|<sha256 of the file>`, cached by file stamp, returned in every answer and in `/v1/modes`; Lens keys its result cache with it. Bump `PIN` when the way text is read changes.
 - Recognition is deterministic, so every request is cached (key = image bytes + mode + engine generation). Model errors are logged and never sent (they can hold paths).
 - On Windows the models folder path must not contain spaces (pytesseract 0.3.13 keeps literal quotes).

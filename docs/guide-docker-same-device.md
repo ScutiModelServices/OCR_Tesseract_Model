@@ -5,7 +5,7 @@ Run Tesseract on the CPU in Docker Desktop on the machine you work on, so other 
 ## Requirements
 
 - Docker Desktop with Compose v2 (Windows: WSL2 backend).
-- A few hundred MB of RAM **per replica** while recognizing. Keep `TESS_REPLICAS=1` on a PC. Docker Desktop on Windows caps its engine at about half of your RAM unless you raise it in `.wslconfig`.
+- A few hundred MB of RAM **per replica** while recognizing. Keep `SERVICE_REPLICAS=1` on a PC. Docker Desktop on Windows caps its engine at about half of your RAM unless you raise it in `.wslconfig`.
 - Network access once, to download the two model files (about 20 MB) from GitHub (`tesseract-ocr/tessdata_fast` and
   `tessdata_best`).
 - CPU only. No model is held in memory.
@@ -16,7 +16,7 @@ Run Tesseract on the CPU in Docker Desktop on the machine you work on, so other 
    ```bash
    cp .env.example .env
    ```
-   Set `TESS_ADMIN_PASSWORD` (empty = no auth and no admin page, fine for a local test). Leave `TESS_PORT=29261`. Leave `TESS_REPLICAS=1`.
+   Set `SERVICE_ADMIN_PASSWORD` (empty = no auth and no admin page, fine for a local test). Leave `SERVICE_PORT=29261`. Leave `SERVICE_REPLICAS=1`.
 2. Start:
    ```bash
    docker compose up -d --build
@@ -44,17 +44,17 @@ In `.env` next to `docker-compose.yml`:
 
 | Variable | Default | Effect |
 |---|---|---|
-| `TESS_REPLICAS` | `1` | Number of `ocr_tesseract_model` containers. Read by Compose. |
-| `TESS_MEM_LIMIT` | `0` (no cap) | RAM cap per container, for example `1g`. An out-of-memory kill then stays in the container instead of starving the host. Read by Compose. |
-| `TESS_PORT` | `29261` | Host port `ocr_tesseract_model_lb` publishes. |
-| `TESS_ADMIN_PASSWORD` | empty | Password for `/admin/`. When set, every call except `/health` must send a token as `X-Internal-Token`. Empty = no auth. |
-| `TESS_NUM_THREAD` | Tesseract decides | Starting value for the CPU threads card (`OMP_THREAD_LIMIT`); a value saved on `/admin/` wins. Applies live. With *Recognitions at once* above 1, use 1 to 2. |
+| `SERVICE_REPLICAS` | `1` | Number of `ocr_tesseract_model` containers. Read by Compose. |
+| `SERVICE_MEM_LIMIT` | `0` (no cap) | RAM cap per container, for example `1g`. An out-of-memory kill then stays in the container instead of starving the host. Read by Compose. |
+| `SERVICE_PORT` | `29261` | Host port `ocr_tesseract_model_lb` publishes. |
+| `SERVICE_ADMIN_PASSWORD` | empty | Password for `/admin/`. When set, every call except `/health` must send a token as `X-Internal-Token`. Empty = no auth. |
+| `SERVICE_NUM_THREAD` | Tesseract decides | Starting value for the CPU threads card (`OMP_THREAD_LIMIT`); a value saved on `/admin/` wins. Applies live. With *Recognitions at once* above 1, use 1 to 2. |
 
 On the **Settings** card of `/admin/` (saved in `settings.json` beside the tokens, shared by all replicas; a saved
-value beats the environment variable named in brackets): update check hours (`TESS_UPDATE_CHECK_HOURS`, 6),
-in-flight cap (`TESS_MAX_INFLIGHT`, 0 = 4), answers kept per replica (`TESS_CACHE_SIZE`, 256, 0 = off), largest image
-(`TESS_MAX_UPLOAD_MB`, 10), pixel limit (`TESS_MAX_PIXELS`, 16,000,000), time limit per call (`TESS_TIMEOUT_S`, 110),
-recognitions at once (`TESS_CONCURRENCY`, 2, restart) and read files at start (`TESS_WARM`, restart). Compose does not pass these; add the variable
+value beats the environment variable named in brackets): update check hours (`SERVICE_UPDATE_CHECK_HOURS`, 6),
+in-flight cap (`SERVICE_MAX_INFLIGHT`, 0 = 4), answers kept per replica (`SERVICE_CACHE_SIZE`, 256, 0 = off), largest image
+(`SERVICE_MAX_UPLOAD_MB`, 10), pixel limit (`SERVICE_MAX_PIXELS`, 16,000,000), time limit per call (`SERVICE_TIMEOUT_S`, 110),
+recognitions at once (`SERVICE_CONCURRENCY`, 2, restart) and read files at start (`SERVICE_WARM`, restart). Compose does not pass these; add the variable
 under `environment:` of `ocr_tesseract_model` to use one as a starting value.
 
 ## Daily use
@@ -70,7 +70,7 @@ docker compose up -d --build && docker compose restart ocr_tesseract_model_lb   
 
 | Symptom | Fix |
 |---|---|
-| `address already in use` on 29261 | Another copy (`run.bat`, or the same stack on another compose project) is running. Stop it or change `TESS_PORT`. |
+| `address already in use` on 29261 | Another copy (`run.bat`, or the same stack on another compose project) is running. Stop it or change `SERVICE_PORT`. |
 | `/health` shows `ready: false` for minutes | The model files are not installed yet: use the Updates card. Check `docker compose logs -f ocr_tesseract_model`. |
 | 401 Invalid token | The caller's token is missing or revoked; make one on `/admin/`. |
 | Container restarts in a loop | Out of RAM. Raise the Docker Desktop memory limit or lower the replica count. |
