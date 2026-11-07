@@ -5,8 +5,8 @@ on the same device, Docker on a deployment device, no Docker). Only the address 
 
 | Run | Address |
 |---|---|
-| Docker or `run.bat` on this PC | `http://127.0.0.1:9260/admin/` |
-| Docker on the deployment box | `http://<box-ip>:9260/admin/` |
+| Docker or `run.bat` on this PC | `http://127.0.0.1:29261/admin/` |
+| Docker on the deployment box | `http://<box-ip>:29261/admin/` |
 
 If `TESS_PORT` is changed, use that port.
 
@@ -85,7 +85,7 @@ docker compose restart ocr_tesseract_model_lb
 | `Admin password required (set TESS_ADMIN_PASSWORD)` | The password is empty. Set it and restart. |
 | Token lost | Revoke it and create a new one. |
 | `/health` shows `ready: false` | A model file or the Tesseract program is missing (see the Updates card and the container logs). |
-| Never expose port 9260 to the internet | It is a LAN tool; use a firewall or VPN for remote access. |
+| Never expose port 29261 to the internet | It is a LAN tool; use a firewall or VPN for remote access. |
 
 ## Limiting a token to projects
 

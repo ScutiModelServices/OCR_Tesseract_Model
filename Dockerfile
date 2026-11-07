@@ -12,5 +12,6 @@ COPY src ./src
 COPY web ./web
 COPY MODEL-LICENSE.txt docs/model-notice.md /licenses/
 
-EXPOSE 9260
+ENV TESS_PORT=29261
+EXPOSE 29261
 CMD ["python", "src/app.py"]

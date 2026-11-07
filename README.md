@@ -57,17 +57,17 @@ at a time (the default is 2) keep the threads at 1 or 2; set it to at most the p
 ## Run
 
 ```bash
-docker compose up -d --build        # http://<host>:9260
+docker compose up -d --build        # http://<host>:29261
 ```
 
 Then open `/admin/`, create a token for Lens, and press **Download new weights** (about 5 MB for `fast`, 15 MB for
 `accurate`). Without Docker: install Tesseract (`winget install UB-Mannheim.TesseractOCR`), then `run.bat` (uv, listens on
-`127.0.0.1:9260`; set `TESSERACT_CMD` if the program is not on PATH). See `deployment.md`.
+`127.0.0.1:29261`; set `TESSERACT_CMD` if the program is not on PATH). See `deployment.md`.
 
 Example:
 
 ```bash
-curl -X POST "http://127.0.0.1:9260/v1/ocr?mode=fast" -H "X-Internal-Token: tess_..." \
+curl -X POST "http://127.0.0.1:29261/v1/ocr?mode=fast" -H "X-Internal-Token: tess_..." \
   -H "Content-Type: image/png" --data-binary @crop.png
 ```
 

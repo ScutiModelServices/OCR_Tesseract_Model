@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Default HTTP port moves from 9260 to 29261. Update explicit old ports in your real `.env`, saved tool-service `backends.json` connections, and browser/MCP client configurations once. Compose now uses 29261 inside API replicas and nginx; deployments using the old Compose default must recreate containers. A custom host-port override stays in effect until you change it; container ports still move to 29261.
+
 - Renamed `TesseractModel` to `OCR_Tesseract_Model`; Docker project, API image, services, load balancer and volumes now use `ocr_tesseract_model` names. Callers on `citadel_core` connect to `ocr_tesseract_model_lb` at the existing port.
 - Docker volume migration: existing volumes with old names are orphaned; renaming does not move data. Stop the old stack before copying; never use `down -v`. The commands below assume the previous default Compose project name; substitute actual volume names if `-p` or `COMPOSE_PROJECT_NAME` overrode it.
   - `tesseract_models` → `ocr_tesseract_model_models`: `docker volume inspect tesseract_models && docker volume create ocr_tesseract_model_models && docker run --rm -v tesseract_models:/from:ro -v ocr_tesseract_model_models:/to alpine:3.21 sh -c "cd /from && cp -a . /to/"`

@@ -1,7 +1,7 @@
 # Deploying OCR_Tesseract_Model
 
-OCR_Tesseract_Model is one HTTP service (port 9260). It runs as `ocr_tesseract_model` replicas behind an nginx load balancer,
-`ocr_tesseract_model_lb`. Callers use `http://<host>:9260`; they never reach a replica directly.
+OCR_Tesseract_Model is one HTTP service (port 29261). It runs as `ocr_tesseract_model` replicas behind an nginx load balancer,
+`ocr_tesseract_model_lb`. Callers use `http://<host>:29261`; they never reach a replica directly.
 
 ## Ways to run it
 

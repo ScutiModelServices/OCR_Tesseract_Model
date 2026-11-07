@@ -1,6 +1,6 @@
 # OCR_Tesseract_Model: without Docker, on Windows
 
-Run Tesseract on the CPU directly with Python: one process, no load balancer, listening on `127.0.0.1:9260`.
+Run Tesseract on the CPU directly with Python: one process, no load balancer, listening on `127.0.0.1:29261`.
 
 ## Requirements
 - Windows with Python 3.11 or newer and uv (`winget install astral-sh.uv`).
@@ -25,7 +25,7 @@ uv run python src/app.py
 | Variable | Default | Effect |
 |---|---|---|
 | `TESS_HOST` | `127.0.0.1` | Bind address. Use `0.0.0.0` only if other devices must reach it. |
-| `TESS_PORT` | `9260` | Port. |
+| `TESS_PORT` | `29261` | Port. |
 | `TESS_ADMIN_PASSWORD` | empty | Unlocks `/admin/` and requires tokens on every call but `/health`. Empty = no auth. |
 | `TESS_WARM` | `1` | Read the model files at start. |
 | `TESS_NUM_THREAD` | the library decides | CPU threads. Set it to the number of **physical** cores. |
@@ -35,16 +35,16 @@ Bash: `TESS_ADMIN_PASSWORD=secret uv run python src/app.py`
 
 ## Check
 ```bash
-curl http://127.0.0.1:9260/health
+curl http://127.0.0.1:29261/health
 ```
-`ready` is `false` until the model files are installed. Then open `http://127.0.0.1:9260/admin/` (see [guide-web-ui.md](guide-web-ui.md)),
+`ready` is `false` until the model files are installed. Then open `http://127.0.0.1:29261/admin/` (see [guide-web-ui.md](guide-web-ui.md)),
 make a token, and try a call:
 ```bash
-curl -X POST "http://127.0.0.1:9260/v1/ocr?mode=fast" -H "X-Internal-Token: tess_..." -H "Content-Type: image/png" --data-binary @crop.png
+curl -X POST "http://127.0.0.1:29261/v1/ocr?mode=fast" -H "X-Internal-Token: tess_..." -H "Content-Type: image/png" --data-binary @crop.png
 ```
 
 ## Stop
-Ctrl+C in the terminal. Do not run this and the Docker stack together: both use port 9260.
+Ctrl+C in the terminal. Do not run this and the Docker stack together: both use port 29261.
 
 ## Tests
 `uv run pytest`.
