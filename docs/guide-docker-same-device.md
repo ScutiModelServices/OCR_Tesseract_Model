@@ -3,11 +3,15 @@
 Run Tesseract on the CPU in Docker Desktop on the machine you work on, so other programs on it can call it.
 
 ## Requirements
+
 - Docker Desktop with Compose v2 (Windows: WSL2 backend).
-- A few hundred MB of RAM **per replica**. Keep `TESS_REPLICAS=1` on a PC. Docker Desktop on Windows caps its engine at about half of your RAM unless you raise it in `.wslconfig`.
-- Internet once, to download the two model files (about 20 MB) from the Updates card.
+- A few hundred MB of RAM **per replica** while recognizing. Keep `TESS_REPLICAS=1` on a PC. Docker Desktop on Windows caps its engine at about half of your RAM unless you raise it in `.wslconfig`.
+- Network access once, to download the two model files (about 20 MB) from GitHub (`tesseract-ocr/tessdata_fast` and
+  `tessdata_best`).
+- CPU only. No model is held in memory.
 
 ## Steps
+
 1. Configure. In `TesseractModel/`:
    ```bash
    cp .env.example .env
@@ -34,7 +38,27 @@ Run Tesseract on the CPU in Docker Desktop on the machine you work on, so other 
    - Caller on the host: `http://127.0.0.1:9260`.
    - Caller in another Docker stack on the same host: `http://host.docker.internal:9260`.
 
+## Settings
+
+In `.env` next to `docker-compose.yml`:
+
+| Variable | Default | Effect |
+|---|---|---|
+| `TESS_REPLICAS` | `1` | Number of `tesseract` containers. Read by Compose. |
+| `TESS_MEM_LIMIT` | `0` (no cap) | RAM cap per container, for example `1g`. An out-of-memory kill then stays in the container instead of starving the host. Read by Compose. |
+| `TESS_PORT` | `9260` | Host port `tess_lb` publishes. |
+| `TESS_ADMIN_PASSWORD` | empty | Password for `/admin/`. When set, every call except `/health` must send a token as `X-Internal-Token`. Empty = no auth. |
+| `TESS_NUM_THREAD` | Tesseract decides | Starting value for the CPU threads card (`OMP_THREAD_LIMIT`); a value saved on `/admin/` wins. Applies live. With *Recognitions at once* above 1, use 1 to 2. |
+
+On the **Settings** card of `/admin/` (saved in `settings.json` beside the tokens, shared by all replicas; a saved
+value beats the environment variable named in brackets): update check hours (`TESS_UPDATE_CHECK_HOURS`, 6),
+in-flight cap (`TESS_MAX_INFLIGHT`, 0 = 4), answers kept per replica (`TESS_CACHE_SIZE`, 256, 0 = off), largest image
+(`TESS_MAX_UPLOAD_MB`, 10), pixel limit (`TESS_MAX_PIXELS`, 16,000,000), time limit per call (`TESS_TIMEOUT_S`, 110),
+recognitions at once (`TESS_CONCURRENCY`, 2, restart) and read files at start (`TESS_WARM`, restart). Compose does not pass these; add the variable
+under `environment:` of `tesseract` to use one as a starting value.
+
 ## Daily use
+
 ```bash
 docker compose ps          # state
 docker compose logs -f tesseract
@@ -43,10 +67,17 @@ docker compose up -d --build && docker compose restart tess_lb   # after a code 
 ```
 
 ## Problems
+
 | Symptom | Fix |
 |---|---|
 | `address already in use` on 9260 | Another copy (`run.bat`, or the same stack on another compose project) is running. Stop it or change `TESS_PORT`. |
 | `/health` shows `ready: false` for minutes | The model files are not installed yet: use the Updates card. Check `docker compose logs -f tesseract`. |
 | 401 Invalid token | The caller's token is missing or revoked; make one on `/admin/`. |
-
 | Container restarts in a loop | Out of RAM. Raise the Docker Desktop memory limit or lower the replica count. |
+| `ready` is `false` | The model files are not installed (use the Updates card), or the Tesseract program is missing (native runs: set `TESSERACT_CMD`). |
+| 503 on `/v1/ocr` | The mode's model file is missing; download it from the Updates card. |
+| 422 on `/v1/ocr` | An empty body, an image that cannot be decoded or has too many pixels, an unknown mode, or an unknown query option. |
+| 413 | The image is larger than *Largest image*. |
+| 429 | Over the token's rate limit, or too many calls waiting. |
+| Slow answers | Lower *Recognitions at once* or CPU threads so the processes do not fight for cores; use `mode=fast`. |
+| nginx 502 after scaling | `tess_lb` not restarted after the replica count changed. |

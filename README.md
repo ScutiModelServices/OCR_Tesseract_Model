@@ -95,3 +95,13 @@ scopes, limits and caches; the panel shows HTTP status, latency, responses, canc
 token placeholder. See [the web UI guide](docs/guide-web-ui.md#try-it-send-a-real-request).
 
 Recognize text sends the chosen image as the raw body to `POST /v1/ocr` with the mode as a query option. The browser caps uploads at 10 MiB.
+
+## Documentation
+
+- [Purpose: input, output and what it is for](docs/purpose.md)
+- [Deployment](deployment.md)
+- [Changelog](CHANGELOG.md)
+- [Docker on another machine](docs/guide-docker-deployment-device.md)
+- [Docker on this PC](docs/guide-docker-same-device.md)
+- [Run without Docker](docs/guide-no-docker-same-device.md)
+- [Model attribution](docs/model-notice.md)

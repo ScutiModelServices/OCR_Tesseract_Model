@@ -37,8 +37,9 @@ DEPLOY_PATHS = [
     "web",
     "README.md",
     "deployment.md",  # README links to it
+    "CHANGELOG.md",  # README links to it
+    "docs",  # README links to it
     "MODEL-LICENSE.txt",  # the Dockerfile copies the license notices
-    "MODEL-NOTICE.md",
 ]
 # Left out of live: Python tests/ folders are not built into the image.
 EXCLUDE_DIRS = {"tests"}

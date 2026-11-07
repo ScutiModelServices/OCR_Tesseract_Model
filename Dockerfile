@@ -10,7 +10,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 COPY src ./src
 COPY web ./web
-COPY MODEL-LICENSE.txt MODEL-NOTICE.md /licenses/
+COPY MODEL-LICENSE.txt docs/model-notice.md /licenses/
 
 EXPOSE 9260
 CMD ["python", "src/app.py"]

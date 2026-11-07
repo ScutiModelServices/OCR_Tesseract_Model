@@ -4,10 +4,12 @@ Run Tesseract on the CPU on a separate always-on machine (default `lex@scutiserv
 `/media/ZimaOS-HD/Apps/TesseractModel`). Callers reach it over the published port.
 
 ## Requirements on the machine
+
 - Docker + Compose v2, and ssh access (root over ssh is refused; use the normal user).
 - A few hundred MB of RAM per replica while it recognizes.
 
 ## 1. Publish the code (from your PC)
+
 Run `TesseractModel\tools\deploy.bat`. Menu:
 
 | Option | Does |
@@ -23,6 +25,7 @@ Keep your own target in the git-ignored `tools\deploy.local.bat` (copy `tools\de
 `DEPLOY_HOST`, `DEPLOY_DIR` and `DEPLOY_WEB_PORT` before running. Commit `main` first: publish reads committed `main`.
 
 ## 2. First-time setup on the machine
+
 ```bash
 mkdir -p /media/ZimaOS-HD/Apps
 git clone -b live <your-repo-url> /media/ZimaOS-HD/Apps/TesseractModel
@@ -35,6 +38,7 @@ Create `.env` (deploy option 2 copies yours, or `cp .env.example .env` and edit)
   `127.0.0.1` in the `ports:` line of `tess_lb` when only callers on the machine need it).
 
 ## 3. Start
+
 ```bash
 docker compose up -d --build
 docker compose ps
@@ -44,6 +48,7 @@ After the first start, open `/admin/` and press **Download new weights** (about 
 (up to 300 s grace).
 
 ## 4. Connect callers
+
 1. Open `http://<machine-ip>:9260/admin/`, sign in with the admin password and create one token per caller
    (see [guide-web-ui.md](guide-web-ui.md)).
 2. The caller holds the URL and token:
@@ -54,7 +59,17 @@ After the first start, open `/admin/` and press **Download new weights** (about 
    curl -X POST "http://127.0.0.1:9260/v1/ocr?mode=fast" -H "X-Internal-Token: tess_..." -H "Content-Type: image/png" --data-binary @crop.png
    ```
 
+## Scaling
+
+```bash
+TESS_REPLICAS=3 docker compose up -d --build
+docker compose restart tess_lb
+```
+
+The restart is needed because nginx resolves replica addresses once at start.
+
 ## Updating
+
 ```bash
 cd /media/ZimaOS-HD/Apps/TesseractModel
 git pull
@@ -62,7 +77,14 @@ docker compose up -d --build
 docker compose restart tess_lb
 ```
 
+## Releasing
+
+A plain publish (`tools\deploy.bat` option 1) only updates the `live` branch. For a release set `VERSION` (and
+`pyproject.toml` to the same number), commit, then run `tools\deploy.bat` option R or
+`py tools\publish_live.py --release`. `tools\make_zip.bat` then builds `zip_versions\TesseractModel-<VERSION>.zip`.
+
 ## Problems
+
 | Symptom | Fix |
 |---|---|
 | Caller cannot reach the service | Check the caller's URL and token, and that `curl http://<machine-ip>:9260/health` works. |
