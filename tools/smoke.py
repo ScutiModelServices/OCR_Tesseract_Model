@@ -19,7 +19,7 @@ async def main() -> None:
         image = decode_image(Path(sys.argv[1]).read_bytes(), 50_000_000)
     else:
         image = Image.new("L", (360, 80), 255)
-        ImageDraw.Draw(image).text((20, 30), "Hello from TesseractModel", fill=0)
+        ImageDraw.Draw(image).text((20, 30), "Hello from OCR_Tesseract_Model", fill=0)
     print("modes", engine.modes())
     t = time.perf_counter()
     out = await engine.recognize(image, mode, 60)

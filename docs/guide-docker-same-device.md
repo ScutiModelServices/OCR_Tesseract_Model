@@ -1,4 +1,4 @@
-# TesseractModel: Docker Desktop on this PC
+# OCR_Tesseract_Model: Docker Desktop on this PC
 
 Run Tesseract on the CPU in Docker Desktop on the machine you work on, so other programs on it can call it.
 
@@ -12,7 +12,7 @@ Run Tesseract on the CPU in Docker Desktop on the machine you work on, so other 
 
 ## Steps
 
-1. Configure. In `TesseractModel/`:
+1. Configure. In `OCR_Tesseract_Model/`:
    ```bash
    cp .env.example .env
    ```
@@ -21,8 +21,8 @@ Run Tesseract on the CPU in Docker Desktop on the machine you work on, so other 
    ```bash
    docker compose up -d --build
    ```
-   After the first start, open `/admin/` and press **Download new weights** (about 20 MB into the `models` volume). `tess_lb` starts only after the service is healthy
-   (up to 300 s grace). Watch with `docker compose ps` and `docker compose logs -f tesseract`.
+   After the first start, open `/admin/` and press **Download new weights** (about 20 MB into the `ocr_tesseract_model_models` volume). `ocr_tesseract_model_lb` starts only after the service is healthy
+   (up to 300 s grace). Watch with `docker compose ps` and `docker compose logs -f ocr_tesseract_model`.
 3. Check:
    ```bash
    curl http://127.0.0.1:9260/health
@@ -44,9 +44,9 @@ In `.env` next to `docker-compose.yml`:
 
 | Variable | Default | Effect |
 |---|---|---|
-| `TESS_REPLICAS` | `1` | Number of `tesseract` containers. Read by Compose. |
+| `TESS_REPLICAS` | `1` | Number of `ocr_tesseract_model` containers. Read by Compose. |
 | `TESS_MEM_LIMIT` | `0` (no cap) | RAM cap per container, for example `1g`. An out-of-memory kill then stays in the container instead of starving the host. Read by Compose. |
-| `TESS_PORT` | `9260` | Host port `tess_lb` publishes. |
+| `TESS_PORT` | `9260` | Host port `ocr_tesseract_model_lb` publishes. |
 | `TESS_ADMIN_PASSWORD` | empty | Password for `/admin/`. When set, every call except `/health` must send a token as `X-Internal-Token`. Empty = no auth. |
 | `TESS_NUM_THREAD` | Tesseract decides | Starting value for the CPU threads card (`OMP_THREAD_LIMIT`); a value saved on `/admin/` wins. Applies live. With *Recognitions at once* above 1, use 1 to 2. |
 
@@ -55,15 +55,15 @@ value beats the environment variable named in brackets): update check hours (`TE
 in-flight cap (`TESS_MAX_INFLIGHT`, 0 = 4), answers kept per replica (`TESS_CACHE_SIZE`, 256, 0 = off), largest image
 (`TESS_MAX_UPLOAD_MB`, 10), pixel limit (`TESS_MAX_PIXELS`, 16,000,000), time limit per call (`TESS_TIMEOUT_S`, 110),
 recognitions at once (`TESS_CONCURRENCY`, 2, restart) and read files at start (`TESS_WARM`, restart). Compose does not pass these; add the variable
-under `environment:` of `tesseract` to use one as a starting value.
+under `environment:` of `ocr_tesseract_model` to use one as a starting value.
 
 ## Daily use
 
 ```bash
 docker compose ps          # state
-docker compose logs -f tesseract
+docker compose logs -f ocr_tesseract_model
 docker compose down        # stop (the weights volume is kept)
-docker compose up -d --build && docker compose restart tess_lb   # after a code change
+docker compose up -d --build && docker compose restart ocr_tesseract_model_lb   # after a code change
 ```
 
 ## Problems
@@ -71,7 +71,7 @@ docker compose up -d --build && docker compose restart tess_lb   # after a code 
 | Symptom | Fix |
 |---|---|
 | `address already in use` on 9260 | Another copy (`run.bat`, or the same stack on another compose project) is running. Stop it or change `TESS_PORT`. |
-| `/health` shows `ready: false` for minutes | The model files are not installed yet: use the Updates card. Check `docker compose logs -f tesseract`. |
+| `/health` shows `ready: false` for minutes | The model files are not installed yet: use the Updates card. Check `docker compose logs -f ocr_tesseract_model`. |
 | 401 Invalid token | The caller's token is missing or revoked; make one on `/admin/`. |
 | Container restarts in a loop | Out of RAM. Raise the Docker Desktop memory limit or lower the replica count. |
 | `ready` is `false` | The model files are not installed (use the Updates card), or the Tesseract program is missing (native runs: set `TESSERACT_CMD`). |
@@ -80,4 +80,6 @@ docker compose up -d --build && docker compose restart tess_lb   # after a code 
 | 413 | The image is larger than *Largest image*. |
 | 429 | Over the token's rate limit, or too many calls waiting. |
 | Slow answers | Lower *Recognitions at once* or CPU threads so the processes do not fight for cores; use `mode=fast`. |
-| nginx 502 after scaling | `tess_lb` not restarted after the replica count changed. |
+| nginx 502 after scaling | `ocr_tesseract_model_lb` not restarted after the replica count changed. |
+
+The load balancer also joins external `citadel_core` as `ocr_tesseract_model_lb`. Start the Citadel stack first so that network exists; tool services on it use `http://ocr_tesseract_model_lb:9260`. Docker project and API image are `ocr_tesseract_model` and `ocr_tesseract_model:latest`; persistent volumes have explicit `ocr_tesseract_model_*` names. Volume migration and rollback instructions are in [CHANGELOG.md](../CHANGELOG.md).

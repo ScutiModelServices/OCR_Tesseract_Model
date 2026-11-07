@@ -1,13 +1,14 @@
 # Tesseract service: N API replicas behind one nginx address. Each replica runs Tesseract child processes,
 # so CPU use is per replica; the downloaded model files are shared through the models volume.
 # Start:  docker compose up -d --build          (callers use http://<host>:9260)
-# Scale:  TESS_REPLICAS=3 docker compose up -d --build, then: docker compose restart tess_lb
+# Scale:  TESS_REPLICAS=3 docker compose up -d --build, then: docker compose restart ocr_tesseract_model_lb
 
-name: tesseract
+name: ocr_tesseract_model
 
 services:
-  tesseract:
+  ocr_tesseract_model:
     build: .
+    image: ocr_tesseract_model:latest
     restart: unless-stopped
     mem_limit: ${TESS_MEM_LIMIT:-0}  # 0 = no cap; a cap makes an out-of-memory kill stay inside this container
     environment:
@@ -15,8 +16,8 @@ services:
       TESS_NUM_THREAD: ${TESS_NUM_THREAD:-}
       TESS_REPLICAS: ${TESS_REPLICAS:-1}  # shown read-only on /admin/
     volumes:
-      - models:/models
-      - tokens:/data
+      - ocr_tesseract_model_models:/models
+      - ocr_tesseract_model_data:/data
     deploy:
       replicas: ${TESS_REPLICAS:-1}
     healthcheck:
@@ -24,9 +25,10 @@ services:
       interval: 15s
       timeout: 5s
       start_period: 300s
-    networks: [tesseract]
+    networks: [ocr_tesseract_model]
 
-  tess_lb:
+  ocr_tesseract_model_lb:
+    container_name: ocr_tesseract_model_lb
     image: nginx:1.27-alpine
     restart: unless-stopped
     ports:
@@ -34,14 +36,22 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      tesseract:
+      ocr_tesseract_model:
         condition: service_healthy
-    networks: [tesseract]
+    networks:
+      ocr_tesseract_model:
+      citadel:
+        aliases: [ocr_tesseract_model_lb]
 
 volumes:
-  models:
-  tokens:
-
+  ocr_tesseract_model_models:
+    name: ocr_tesseract_model_models
+  ocr_tesseract_model_data:
+    name: ocr_tesseract_model_data
 networks:
-  # Other stacks reach http://tess_lb:9260 by joining this network.
-  tesseract:
+  # Other stacks reach http://ocr_tesseract_model_lb:9260 by joining this network.
+  ocr_tesseract_model:
+    name: ocr_tesseract_model
+  citadel:
+    name: citadel_core
+    external: true

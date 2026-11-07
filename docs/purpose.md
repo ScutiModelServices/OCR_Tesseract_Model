@@ -13,4 +13,4 @@
 | Runs on | CPU (Tesseract LSTM, English models). |
 
 **Use for:** classic OCR of clean printed text. Model half of `ToolServices/Lens`.
-**Not for:** region cutting, layout or multi-page parsing (see `SGLangModel`), handwriting.
+**Not for:** region cutting, layout or multi-page parsing (see `OCR_SGLang_Model`), handwriting.

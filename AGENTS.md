@@ -1,6 +1,6 @@
-# TesseractModel
+# OCR_Tesseract_Model
 
-Tesseract OCR (`--oem 1`, English `fast` and `accurate` models, CPU) served over HTTP, behind the shared model-service admin page, tokens and settings. Port 9260, env prefix `TESS_`, token prefix `tess_`. The model half of `AI/ToolServices/Lens`: one image crop in, text and confidence out. Built from `STTMoonshineModel`.
+Tesseract OCR (`--oem 1`, English `fast` and `accurate` models, CPU) served over HTTP, behind the shared model-service admin page, tokens and settings. Port 9260, env prefix `TESS_`, token prefix `tess_`. The model half of `AI/ToolServices/Lens`: one image crop in, text and confidence out. Built from `STT_Moonshine_Model`.
 
 ## Agent instructions
 This file is the one instruction file for every coding agent; `CLAUDE.md` only imports it (`@AGENTS.md`). Edit this file, never `CLAUDE.md`.

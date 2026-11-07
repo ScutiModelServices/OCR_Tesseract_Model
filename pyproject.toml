@@ -1,5 +1,5 @@
 [project]
-name = "tesseract-service"
+name = "ocr_tesseract_model"
 description = "One HTTP service that runs Tesseract OCR (CPU) for every project: one image crop in, text and confidence out"
 version = "0.1.0"
 license = "MIT"

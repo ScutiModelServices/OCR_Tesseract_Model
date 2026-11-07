@@ -1,4 +1,4 @@
-# TesseractModel
+# OCR_Tesseract_Model
 
 The one place Tesseract OCR is served: Tesseract (`--oem 1`, the LSTM engine) with the official English models, on the
 CPU. Projects send one image over HTTP and get text and a confidence back. It has the same admin page, tokens, rate
@@ -36,7 +36,7 @@ kept. New model files empty the cache. The cache is per replica, so with N repli
 ## Model files
 
 Two official files, pinned by SHA-256 in `src/engine.py` (`WEIGHTS`): `tessdata_fast` and `tessdata_best`, `eng.traineddata`
-each, kept under `models/fast` and `models/accurate` (Docker: the `models` volume at `/models`). They are not
+each, kept under `models/fast` and `models/accurate` (Docker: the `ocr_tesseract_model_models` volume at `/models`). They are not
 downloaded at start. Press **Download new weights** on the **Updates** card once; it fetches what is missing or different
 and checks the digest before it replaces anything. The card compares the installed files with the pinned digests, so a
 newer upstream model needs a new release of this service (a code change on purpose). `ready` stays false until both

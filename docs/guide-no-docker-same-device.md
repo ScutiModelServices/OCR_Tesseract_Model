@@ -1,4 +1,4 @@
-# TesseractModel: without Docker, on Windows
+# OCR_Tesseract_Model: without Docker, on Windows
 
 Run Tesseract on the CPU directly with Python: one process, no load balancer, listening on `127.0.0.1:9260`.
 
@@ -9,12 +9,12 @@ Run Tesseract on the CPU directly with Python: one process, no load balancer, li
 - A few hundred MB of RAM while it recognizes.
 
 ## Start
-Double-click `run.bat`, or run it in a terminal from `TesseractModel\`. Choose **1 Run the service** in the menu, or run `run.bat run` to skip the menu. It runs `uv sync` to create or update `.venv`, then starts
+Double-click `run.bat`, or run it in a terminal from `OCR_Tesseract_Model\`. Choose **1 Run the service** in the menu, or run `run.bat run` to skip the menu. It runs `uv sync` to create or update `.venv`, then starts
 `python src/app.py`. Then press **Download new weights** on the Updates card of `/admin/`.
 
 Linux or macOS:
 ```bash
-cd TesseractModel
+cd OCR_Tesseract_Model
 uv sync
 uv run python src/app.py
 ```

@@ -1,4 +1,4 @@
-# TesseractModel: the admin web UI
+# OCR_Tesseract_Model: the admin web UI
 
 One page, `/admin/`, for tokens and CPU threads. It is the same for every way of running the service (Docker
 on the same device, Docker on a deployment device, no Docker). Only the address differs:
@@ -49,7 +49,7 @@ are approximate. Request counts are added to the file with that same write; uses
 counted in memory, so a crash can lose up to a minute of them. Old token files without the field still load and show **never** until next use. A companion
 `tokens.json.lock` file serializes updates across replicas without adding dependencies.
 
-Tokens live in `tokens.json` (`TESS_TOKENS_FILE`). In Docker that is the `tokens` volume at `/data`, so they
+Tokens live in `tokens.json` (`TESS_TOKENS_FILE`). In Docker that is the `ocr_tesseract_model_data` volume at `/data`, so they
 survive `docker compose down` and rebuilds. Without Docker it is `tokens.json` in the folder the service starts from.
 Tokens are enforced only while `TESS_ADMIN_PASSWORD` is set.
 
@@ -72,7 +72,7 @@ The muted line says **Replicas: N. Change TESS_REPLICAS in .env, then rebuild.**
 page cannot change them. To change, set them in `.env`, then:
 ```bash
 docker compose up -d --build
-docker compose restart tess_lb
+docker compose restart ocr_tesseract_model_lb
 ```
 `unknown` means the variable is not set, which is normal without Docker. Without Docker there is one process.
 
@@ -111,7 +111,7 @@ The **Settings** card changes options without editing `.env` or restarting: upda
 The **Updates** card compares the installed files with the digests pinned in this release. **Download new weights**
 installs what is missing or different, checking the SHA-256 first; every replica forgets its kept answers within a few
 seconds. A newer upstream model needs a new release: change `WEIGHTS` in `src/engine.py`, then
-`docker compose up -d --build` and `docker compose restart tess_lb`.
+`docker compose up -d --build` and `docker compose restart ocr_tesseract_model_lb`.
 
 ## Connect to this service
 
