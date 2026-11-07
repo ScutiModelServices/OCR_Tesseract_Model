@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Admin page: **Connect to this service** card with the addresses other services can use (this page's address, same PC, Docker network, `host.docker.internal`) and every endpoint, each with a Copy button.
 - First version: Tesseract OCR (`--oem 1`, official English `tessdata_fast` and `tessdata_best`) served on the CPU, with
   the admin page, tokens (rate limit, expiry), metrics, Settings card, update checks, model file downloads, Try it panel
   and answer cache shared with the other model services. Built from STTMoonshineModel. It takes over the OCR engine that
