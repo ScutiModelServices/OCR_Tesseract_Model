@@ -51,7 +51,7 @@ def test_each_mode_reads_its_own_folder_and_a_changed_file_changes_the_fingerpri
 def test_a_missing_file_or_program_is_a_503_not_a_crash(tmp_path):
     engine = make_engine(models=("fast",))
     assert engine.modes()["accurate"] == {"available": False, "fingerprint": None} and engine.ready is False
-    with pytest.raises(EngineError, match="missing") as caught:
+    with pytest.raises(EngineError, match="Download") as caught:
         asyncio.run(engine.recognize(Image.new("L", (8, 8)), "accurate", 5))
     assert caught.value.status == 503
     nothing = make_engine(command="no-such-program-xyz")

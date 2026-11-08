@@ -132,3 +132,15 @@ The browser caps uploads at **10 MiB**, displayed text at **256 KiB**, and binar
 ### This service's request
 
 Recognize text sends the chosen image (PNG, JPEG or WebP) as the raw body to `POST /v1/ocr`, with the mode as a query option. The browser caps uploads at 10 MiB; the server can impose a lower limit. The curl body is `@crop.png`.
+
+## Downloaded weights
+
+Weights load only from downloaded files. An empty installation still serves `/admin/` and `/health` with `ready: false`; inference returns 503. Open `/admin/` → **Updates** → **Download** before the first inference. Checks run online without downloading; only an admin Download replaces weights and reloads replicas.
+
+Alternatively, use the authenticated admin download route (replace the password placeholder):
+
+```bash
+curl -X POST http://127.0.0.1:29261/admin/updates/weights -H "X-Internal-Token: <ADMIN_PASSWORD>"
+```
+
+The Updates card shows the downloaded and online versions and reports when a newer version is available. A pinned file or local import has no online newer-version comparison. Download runs only when requested by an admin.

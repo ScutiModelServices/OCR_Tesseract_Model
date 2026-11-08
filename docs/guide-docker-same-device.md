@@ -83,3 +83,5 @@ docker compose up -d --build && docker compose restart ocr_tesseract_model_lb   
 | nginx 502 after scaling | `ocr_tesseract_model_lb` not restarted after the replica count changed. |
 
 The load balancer also joins external `citadel_core` as `ocr_tesseract_model_lb`. Start the Citadel stack first so that network exists; tool services on it use `http://ocr_tesseract_model_lb:29261`. Docker project and API image are `ocr_tesseract_model` and `ocr_tesseract_model:latest`; persistent volumes have explicit `ocr_tesseract_model_*` names. Volume migration and rollback instructions are in [CHANGELOG.md](../CHANGELOG.md).
+
+Before first inference, follow [Downloaded weights](guide-web-ui.md#downloaded-weights): open `/admin/` → Updates → Download. Startup never downloads weights.

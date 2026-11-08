@@ -211,7 +211,7 @@ class TesseractEngine:
                     self._stamps[path] = stamp, file_digest(path)
                 digest = self._stamps[path][1]
         except OSError:
-            raise EngineError(f"The {mode} model file is missing. Download it from the Updates card.", 503) from None
+            raise EngineError(f"The {mode} model file is missing. Ask an admin to press Download on the Updates card.", 503) from None
         return f"{PIN}|{mode}|{digest}"
 
     def modes(self) -> dict[str, dict[str, Any]]:

@@ -49,3 +49,5 @@ Ctrl+C in the terminal. Do not run this and the Docker stack together: both use 
 
 ## Tests
 `uv run pytest`.
+
+Before first inference, follow [Downloaded weights](guide-web-ui.md#downloaded-weights): open `/admin/` → Updates → Download. Startup never downloads weights.

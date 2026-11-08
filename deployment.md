@@ -3,6 +3,8 @@
 OCR_Tesseract_Model is one HTTP service (port 29261). It runs as `ocr_tesseract_model` replicas behind an nginx load balancer,
 `ocr_tesseract_model_lb`. Callers use `http://<host>:29261`; they never reach a replica directly.
 
+Weights are downloaded explicitly from the [Updates card](docs/guide-web-ui.md#downloaded-weights); startup never downloads weights.
+
 ## Ways to run it
 
 Each path has its own guide. Pick one.

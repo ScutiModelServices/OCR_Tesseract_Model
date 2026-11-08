@@ -139,7 +139,7 @@ def create_app(client: TesseractEngine | None = None, admin_password: str | None
         background: list[asyncio.Task] = []
         try:
             if config.get("warm") if config else warm:
-                # In the background: the first start downloads the weights, and /health must answer meanwhile.
+                # In the background: downloaded weights load here, and /health must answer meanwhile.
                 background.append(asyncio.create_task(warm_up()))
             if config or check_hours > 0:
                 background.append(asyncio.create_task(check_forever()))

@@ -91,3 +91,5 @@ A plain publish (`run.bat`, Deploy, option 1) only updates the `live` branch. Fo
 | nginx 502 after an update | `docker compose restart ocr_tesseract_model_lb`. |
 | Permission denied on push | run.bat Deploy option 6. |
 | Port 29261 in use | Another stack on the machine already publishes it. |
+
+Before first inference, follow [Downloaded weights](guide-web-ui.md#downloaded-weights): open `/admin/` → Updates → Download. Startup never downloads weights.

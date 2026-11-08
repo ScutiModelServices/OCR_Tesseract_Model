@@ -11,6 +11,7 @@ This file is the one instruction file for every coding agent; `CLAUDE.md` only i
 - Run: `run.bat run`, or `uv run python src/app.py` (add `--dotenv` to load `.env`), or `docker compose up -d --build`
 
 ## Rules
+- Load downloaded weights only. Startup, warm-up and inference never download; only the authenticated Updates Download callback may fetch weights. Missing weights keep health/admin available and inference returns 503 with an admin Download hint.
 - Follow the `model-service-parity` skill and `AI/ModelServices/_docs/SHARED-FEATURES.md` (what must match in every model service) and `AI/ModelServices/_docs/SERVICE-SPECIFIC.md` (what differs on purpose). A change to a shared feature goes to every service; a new difference goes into `SERVICE-SPECIFIC.md` in the same change.
 - `web/index.html`, `web/playground.js`, `src/tokens.py`, `src/settings.py`, `src/updates.py` and `.dockerignore` are copies shared with the other model services. Change one, copy it to the others, run `python tools/check_sync.py` in each repo.
 - Differences from the other services: `POST /v1/ocr` takes one PNG, JPEG or WebP as the body and `mode` (`fast` or `accurate`) and `timeout` as query options (others 422); `GET /v1/modes` lists availability and fingerprints; no streaming, no `trust_remote_code`, no project models, no `temperature`/`max_tokens`; one crop per call (the caller cuts regions); English only.

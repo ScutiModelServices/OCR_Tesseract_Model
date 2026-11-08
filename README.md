@@ -56,6 +56,8 @@ at a time (the default is 2) keep the threads at 1 or 2; set it to at most the p
 
 ## Run
 
+Weights load only from downloaded files. An empty installation still serves `/admin/` and `/health` with `ready: false`; inference returns 503. Open `/admin/` → **Updates** → **Download** before the first inference. Checks run online without downloading; only an admin Download replaces weights and reloads replicas.
+
 ```bash
 docker compose up -d --build        # http://<host>:29261
 ```
