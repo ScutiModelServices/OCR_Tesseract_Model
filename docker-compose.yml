@@ -1,0 +1,57 @@
+# Tesseract service: N API replicas behind one nginx address. Each replica runs Tesseract child processes,
+# so CPU use is per replica; the downloaded model files are shared through the models volume.
+# Start:  docker compose up -d --build          (callers use http://<host>:29261)
+# Scale:  SERVICE_REPLICAS=3 docker compose up -d --build, then: docker compose restart ocr_tesseract_model_lb
+
+name: ocr_tesseract_model
+
+services:
+  ocr_tesseract_model:
+    build: .
+    image: ocr_tesseract_model:latest
+    restart: unless-stopped
+    mem_limit: ${SERVICE_MEM_LIMIT:-0}  # 0 = no cap; a cap makes an out-of-memory kill stay inside this container
+    environment:
+      SERVICE_ADMIN_PASSWORD: ${SERVICE_ADMIN_PASSWORD:-}
+      SERVICE_NUM_THREAD: ${SERVICE_NUM_THREAD:-}
+      SERVICE_REPLICAS: ${SERVICE_REPLICAS:-1}  # shown read-only on /admin/
+    volumes:
+      - ocr_tesseract_model_models:/models
+      - ocr_tesseract_model_data:/data
+    deploy:
+      replicas: ${SERVICE_REPLICAS:-1}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:29261/health')"]
+      interval: 15s
+      timeout: 5s
+      start_period: 300s
+    networks: [ocr_tesseract_model]
+
+  ocr_tesseract_model_lb:
+    container_name: ocr_tesseract_model_lb
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "${SERVICE_PORT:-29261}:29261"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      ocr_tesseract_model:
+        condition: service_healthy
+    networks:
+      ocr_tesseract_model:
+      citadel:
+        aliases: [ocr_tesseract_model_lb]
+
+volumes:
+  ocr_tesseract_model_models:
+    name: ocr_tesseract_model_models
+  ocr_tesseract_model_data:
+    name: ocr_tesseract_model_data
+networks:
+  # Other stacks reach http://ocr_tesseract_model_lb:29261 by joining this network.
+  ocr_tesseract_model:
+    name: ocr_tesseract_model
+  citadel:
+    name: citadel_core
+    external: true
