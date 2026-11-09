@@ -127,6 +127,7 @@ def default_marker(models_dir: Path) -> Path:
 def download_weights(models_dir: Path) -> None:
     """Install every pinned file that is missing or different, checking the SHA-256 before it replaces anything."""
     import httpx
+    from progress import progress
 
     for mode, spec in WEIGHTS.items():
         folder = models_dir / mode
@@ -140,8 +141,10 @@ def download_weights(models_dir: Path) -> None:
         try:
             with httpx.stream("GET", url, timeout=120, follow_redirects=True) as reply, part.open("xb") as out:
                 reply.raise_for_status()
+                progress.start(f"{mode} model", int(reply.headers.get("content-length") or 0))
                 for chunk in reply.iter_bytes(256 * 1024):
                     size += len(chunk)
+                    progress.set(size)
                     if size > MAX_MODEL_BYTES:
                         raise ValueError("The download is bigger than a model file can be.")
                     digest.update(chunk)
@@ -150,6 +153,7 @@ def download_weights(models_dir: Path) -> None:
                 raise ValueError(f"Checksum check failed for the {mode} model; the installed file was not replaced.")
             os.replace(part, target)
         finally:
+            progress.finish()
             part.unlink(missing_ok=True)
 
 
