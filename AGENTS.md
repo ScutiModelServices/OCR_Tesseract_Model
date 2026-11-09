@@ -8,7 +8,7 @@ This file is the one instruction file for every coding agent; `CLAUDE.md` only i
 ## Commands (from this folder, venv `.venv`, managed by uv)
 - Install: `uv sync` (`winget install astral-sh.uv` if uv is missing)
 - Test: `uv run pytest -q` (fake runner and fake model files, no Tesseract program needed). `tests/test_admin_ui.py` needs Playwright and its browser and is skipped without it. On Windows, if uv fails with "cannot move the file to a different disk drive", set `UV_CACHE_DIR` to a folder on the same drive and `UV_LINK_MODE=copy`.
-- Run: `run.bat run`, or `uv run python src/app.py` (add `--dotenv` to load `.env`), or `docker compose up -d --build`
+- Run: `run.bat run`, or `uv run python src/app.py` (add `--dotenv` to load `.env.local` and `.env`), or `docker compose --env-file .env.compose up -d --build`
 
 ## Rules
 - Load downloaded weights only. Startup, warm-up and inference never download; only the authenticated Updates Download callback may fetch weights. Missing weights keep health/admin available and inference returns 503 with an admin Download hint.
@@ -22,5 +22,5 @@ This file is the one instruction file for every coding agent; `CLAUDE.md` only i
 - Recognition is deterministic, so every request is cached (key = image bytes + mode + engine generation). Model errors are logged and never sent (they can hold paths).
 - On Windows the models folder path must not contain spaces (pytesseract 0.3.13 keeps literal quotes).
 - Behaviour changes update `README.md`, `deployment.md`, `docs/guide-web-ui.md`, `.env.example` and `CHANGELOG.md` in the same commit.
-- Never read or print `.env`, `tokens.json` or `settings.json`.
+- Never read or print `.env`, `.env.local`, `.env.compose`, `tokens.json` or `settings.json`.
 - Commit with the noreply author email `214214011+scutiii2@users.noreply.github.com` (another address is rejected on push). Push `main`, then run `python tools/publish_live.py`. Build Docker only when the Dockerfile or the dependencies changed.
