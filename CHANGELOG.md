@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix: on Windows the service now also looks in `%ProgramFiles%\Tesseract-OCR`, where `winget install UB-Mannheim.TesseractOCR` puts the program without adding it to PATH. Before, a fresh install answered "Tesseract is not installed on this service".
+
 - Admin UI: separate hash-routed pages in a collapsible sidebar; health-first Overview, one main-header page title, capability-specific navigation, draft-preserving navigation and responsive desktop/mobile layout. Existing admin and public API actions are preserved.
 
 - Admin page: the CPU threads card and tile are hidden when `CONFIG.tags` has `host-threads`, and the Project models card is shown only with `project-models`.

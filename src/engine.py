@@ -29,6 +29,7 @@ MODES = ("fast", "accurate")
 DEFAULT_MODE = "accurate"
 MAX_MODEL_BYTES = 32 * 1024 * 1024  # the biggest model file we will accept while downloading
 PIN = "tesseract-tsv-v1"  # bump when the way text is read from Tesseract's output changes (it keys caches)
+WINDOWS_INSTALL = os.path.join(os.environ.get("ProgramFiles", r"C:\Program Files"), "Tesseract-OCR", "tesseract.exe")  # where `winget install UB-Mannheim.TesseractOCR` puts it
 
 _log = logging.getLogger(__name__)
 
@@ -162,7 +163,8 @@ class TesseractEngine:
                  command: str | None = None, runner: Callable[..., tuple[str, float | None]] = run_tesseract,
                  downloader: Callable[[Path], None] = download_weights, concurrency: int = 2) -> None:
         self.models_dir = Path(models_dir or os.environ.get("SERVICE_MODELS_DIR") or "models")
-        self.command = shutil.which(command or os.environ.get("TESSERACT_CMD") or "tesseract")
+        self.command = shutil.which(command or os.environ.get("TESSERACT_CMD") or "tesseract") or (
+            None if command or os.name != "nt" else shutil.which(WINDOWS_INSTALL))  # the Windows installer does not add itself to PATH
         self._runner, self._downloader = runner, downloader
         self._marker = marker if marker is not None else default_marker(self.models_dir)
         self._seen = self._read_marker()

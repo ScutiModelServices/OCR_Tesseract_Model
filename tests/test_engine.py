@@ -1,6 +1,9 @@
 import asyncio
+import os
 
 import pytest
+
+import engine as engine_module
 from PIL import Image
 
 from conftest import IMAGE, FakeRunner, make_engine, png
@@ -58,6 +61,17 @@ def test_a_missing_file_or_program_is_a_503_not_a_crash(tmp_path):
     assert nothing.ready is False
     with pytest.raises(EngineError, match="not installed"):
         nothing.fingerprint("fast")
+
+
+@pytest.mark.skipif(os.name != "nt", reason="the installer location is a Windows thing")
+def test_the_windows_install_folder_is_used_when_the_program_is_not_on_path(tmp_path, monkeypatch):
+    program = tmp_path / "tesseract.exe"
+    program.write_bytes(b"")
+    monkeypatch.setenv("PATH", str(tmp_path / "empty"))
+    monkeypatch.delenv("TESSERACT_CMD", raising=False)
+    monkeypatch.setattr(engine_module, "WINDOWS_INSTALL", str(program))
+    assert engine_module.TesseractEngine(tmp_path / "models").command == str(program)
+    assert engine_module.TesseractEngine(tmp_path / "models", command="no-such-program-xyz").command is None  # an explicit name never falls back
 
 
 def test_an_unknown_mode_is_refused():

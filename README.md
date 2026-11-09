@@ -64,7 +64,7 @@ docker compose up -d --build        # http://<host>:29261
 
 Then open `/admin/`, create a token for Lens, and press **Download new weights** (about 5 MB for `fast`, 15 MB for
 `accurate`). Without Docker: install Tesseract (`winget install UB-Mannheim.TesseractOCR`), then `run.bat` (uv, listens on
-`127.0.0.1:29261`; set `TESSERACT_CMD` if the program is not on PATH). See `deployment.md`.
+`127.0.0.1:29261`; set `TESSERACT_CMD` if the program is elsewhere; on Windows the installer's default folder is found without it). See `deployment.md`.
 
 Example:
 
