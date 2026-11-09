@@ -64,7 +64,7 @@ docker compose up -d --build        # http://<host>:29261
 
 Then open `/admin/`, create a token for Lens, and press **Download new weights** (about 5 MB for `fast`, 15 MB for
 `accurate`). Without Docker: install Tesseract (`winget install UB-Mannheim.TesseractOCR`), then `run.bat` (uv, listens on
-`127.0.0.1:29261`; set `TESSERACT_CMD` if the program is not on PATH). See `deployment.md`.
+`127.0.0.1:29261`; set `TESSERACT_CMD` if the program is elsewhere; on Windows the installer's default folder is found without it). See `deployment.md`.
 
 Example:
 
@@ -108,3 +108,17 @@ Recognize text sends the chosen image as the raw body to `POST /v1/ocr` with the
 - [Run without Docker](docs/guide-no-docker-same-device.md)
 - [Model attribution](docs/model-notice.md)
 - [Test it from the command line](docs/guide-cli.md)
+
+## Admin pages and navigation
+
+Open `/admin/` and sign in. Overview opens first; each sidebar destination has its own URL fragment and supports browser Back/Forward and direct links:
+
+- `#overview`: health, model readiness, replicas, active tokens and request counts.
+- `#playground`: service-specific request forms and streamed or media responses.
+- `#tokens`: create, edit, expire and revoke scoped access tokens.
+- `#runtime`: CPU threads where supported, replica information and live/restart settings.
+- `#updates`: check versions and explicitly download weights.
+- `#connections`: caller addresses and public endpoints.
+- `#models` and `#voices`: project models and cloned voices, shown only when supported.
+
+Collapse/Expand switches between labeled sidebar and icon rail on desktop and mobile. The non-secret sidebar preference is saved per service in this browser. Navigation preserves form drafts and active Playground requests; sign-out still clears credentials and cancels work. Page names appear once in the main header. No preview data or cross-service selector ships in the real admin UI. Existing authentication, quotas, settings precedence and explicit-download policy remain in effect.
